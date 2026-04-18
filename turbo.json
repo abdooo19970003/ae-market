@@ -15,6 +15,15 @@
     },
     "dev": {
       "cache": false,
+      "persistent": true,
+      "dependsOn": ["^build"]
+    },
+    "db:generate": {
+      "cache": true,
+      "inputs": ["src/schemas/**"]
+    },
+    "db:migrate": {
+      "cache": false,
       "persistent": true
     }
   }
