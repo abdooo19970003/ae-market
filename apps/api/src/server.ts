@@ -8,6 +8,7 @@ import categoriesRouter from "./routes/categories.routes"
 import productRouter from "./routes/product.routes"
 import authRouter from "./routes/auth.routes"
 
+export const V1 = "/api/v1"
 
 export const createServer = (): Express => {
   const app = express();
@@ -19,11 +20,10 @@ export const createServer = (): Express => {
     .use(express.urlencoded({ extended: true }));
 
   // ─── Routes ───────────────────────────────────────────────────────
-  const API = "/api/v1"
 
-  app.use(`${API}/categories`, categoriesRouter)
-  app.use(`${API}/products`, productRouter)
-  app.use(`${API}/auth`, authRouter)
+  app.use(`${V1}/categories`, categoriesRouter)
+  app.use(`${V1}/products`, productRouter)
+  app.use(`${V1}/auth`, authRouter)
 
   // ___ Test Route __________________________________________________
   app.get("/message/:name", (req, res) =>
@@ -31,7 +31,7 @@ export const createServer = (): Express => {
       .status(200));
 
   // __ Health Check _________________________________________________
-  app.get("/health", (req, res) =>
+  app.get(`${V1}/health`, (req, res) =>
     res.status(200)
       .json({
         status: "ok",

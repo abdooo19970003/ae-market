@@ -63,10 +63,11 @@ function hashToken(token: string): string {
 export async function saveRefreshToken(userId: number, token: string): Promise<void> {
   const expiredAt = new Date(Date.now() + TOKEN_TTL.refresh_ms);
   const hashedToken = hashToken(token);
+  console.log(hashToken);
 
   await db.insert(refreshTokens).values({
     userId,
-    token: hashedToken,
+    tokenHash: hashedToken,
     expiredAt,
   })
 }
@@ -79,7 +80,7 @@ export async function rotateRefreshToken(oldToken: string, userId: number)
   const [stored] = await db
     .select()
     .from(refreshTokens)
-    .where(eq(refreshTokens.token, hashedToken))
+    .where(eq(refreshTokens.tokenHash, hashedToken))
     .limit(1)
 
   if (!stored
@@ -91,7 +92,7 @@ export async function rotateRefreshToken(oldToken: string, userId: number)
   // delete old token - (rotation means one-time-use)
   await db
     .delete(refreshTokens)
-    .where(eq(refreshTokens.token, hashedToken))
+    .where(eq(refreshTokens.tokenHash, hashedToken))
 
   // Issue new pair
   const jti = crypto.randomUUID();

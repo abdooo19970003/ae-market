@@ -5,6 +5,8 @@ import { eq } from "drizzle-orm"
 import { AppError } from "../lib/response";
 import { StatusCodes } from "http-status-codes";
 import { hashPassword, revokeAllUserTokens, rotateRefreshToken, saveRefreshToken, signAccessToken, signRefreshToken, verifyRefreshToken } from "../lib/jwt";
+import { token } from "morgan";
+import bcrypt from "bcryptjs";
 
 
 
@@ -40,7 +42,8 @@ export async function register(input: RegisterInput) {
   const [newUser] = await db.insert(users).values({
     email: input.email.toLocaleLowerCase(),
     password: hashedPassword,
-    role: input.role,
+    role: "customer",
+    isActive: input.isActive ?? true,
   }).returning()
   if (!newUser)
     throw new AppError("Failed to create user", StatusCodes.INTERNAL_SERVER_ERROR)
@@ -58,8 +61,11 @@ export async function login(input: LoginInput) {
     eq(users.email, input.email.toLowerCase())
   ).limit(1)
 
+  // check password
+  const passwordMatch = await bcrypt.compare(input.password, user?.password ?? "")
+
   //constant-time guard - don't reveal whether email exists
-  if (!user || user.password !== input.password) {
+  if (!user || passwordMatch === false) {
     await sleep(2000) // time guard
     throw new AppError("Invalid credentials", StatusCodes.UNAUTHORIZED)
   }
