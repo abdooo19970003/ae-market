@@ -1,0 +1,2 @@
+ALTER TABLE "category_attributes" DROP CONSTRAINT "category_attributes_slug_unique";--> statement-breakpoint
+ALTER TABLE "category_attributes" ADD CONSTRAINT "uq_category_attributes_category_slug" UNIQUE("category_id","slug");

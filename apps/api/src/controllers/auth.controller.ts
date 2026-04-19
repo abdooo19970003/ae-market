@@ -9,8 +9,6 @@ import { z } from "zod";
 // __ POST : /auth/register _________________________
 export async function register(req: Request, res: Response, next: NextFunction) {
   try {
-    console.log(req.body);
-
     const body = registerSchema.parse(req.body)
     const result = await authSvc.register(body)
     sendSuccess(res, result, StatusCodes.CREATED)

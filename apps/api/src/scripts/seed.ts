@@ -1,21 +1,22 @@
 import "dotenv/config";
-import { drizzle }  from "drizzle-orm/node-postgres";
-import { Pool }     from "pg";
-import bcrypt       from "bcryptjs";
-import * as schema  from "../schema";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { eq, and } from "drizzle-orm";
+import { Pool } from "pg";
+import bcrypt from "bcryptjs";
+import * as schema from "../schema";
 
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-const db   = drizzle(pool, { schema });
+const db = drizzle(pool, { schema });
 
 // ─────────────────────────────────────────────
 // Helpers
 // ─────────────────────────────────────────────
 const hash = (p: string) => bcrypt.hashSync(p, 10);
 
-const log  = {
+const log = {
   section: (t: string) => console.log(`\n\x1b[36m━━━ ${t} ━━━\x1b[0m`),
-  ok:      (t: string) => console.log(`  \x1b[32m✔\x1b[0m  ${t}`),
-  skip:    (t: string) => console.log(`  \x1b[33m–\x1b[0m  ${t} (skipped, already exists)`),
+  ok: (t: string) => console.log(`  \x1b[32m✔\x1b[0m  ${t}`),
+  skip: (t: string) => console.log(`  \x1b[33m–\x1b[0m  ${t} (skipped, already exists)`),
 };
 
 // ─────────────────────────────────────────────
@@ -26,10 +27,10 @@ async function seedUsers() {
   log.section("Users");
 
   const seedData = [
-    { email: "admin@store.com",    password: hash("Admin1234!"), role: "admin"    as const, isActive: true },
-    { email: "customer@store.com", password: hash("Pass1234!"),  role: "customer" as const, isActive: true },
-    { email: "jane@store.com",     password: hash("Pass1234!"),  role: "customer" as const, isActive: true },
-    { email: "inactive@store.com", password: hash("Pass1234!"),  role: "customer" as const, isActive: false },
+    { email: "admin@store.com", password: hash("Admin1234!"), role: "admin" as const, isActive: true },
+    { email: "customer@store.com", password: hash("Pass1234!"), role: "customer" as const, isActive: true },
+    { email: "jane@store.com", password: hash("Pass1234!"), role: "customer" as const, isActive: true },
+    { email: "inactive@store.com", password: hash("Pass1234!"), role: "customer" as const, isActive: false },
   ];
 
   const insertedUsers: (typeof schema.users.$inferSelect)[] = [];
@@ -51,10 +52,14 @@ async function seedUsers() {
 
   // Seed profiles for active customers
   const profiles = [
-    { userId: insertedUsers[1].id, firstName: "John",  lastName: "Doe",  phone: "+966501234567",
-      city: "Riyadh",  country: "SA", addressLine1: "King Fahd Rd" },
-    { userId: insertedUsers[2].id, firstName: "Jane",  lastName: "Smith", phone: "+905321234567",
-      city: "Istanbul", country: "TR", addressLine1: "Istiklal Cd" },
+    {
+      userId: insertedUsers[1].id, firstName: "John", lastName: "Doe", phone: "+966501234567",
+      city: "Riyadh", country: "SA", addressLine1: "King Fahd Rd"
+    },
+    {
+      userId: insertedUsers[2].id, firstName: "Jane", lastName: "Smith", phone: "+905321234567",
+      city: "Istanbul", country: "TR", addressLine1: "Istiklal Cd"
+    },
   ];
 
   for (const p of profiles) {
@@ -78,8 +83,8 @@ async function seedCategories() {
   // ── Root categories ──────────────────────────
   const rootCats = [
     { name: "Electronics", slug: "electronics", sortOrder: 1 },
-    { name: "Clothing",    slug: "clothing",    sortOrder: 2 },
-    { name: "Books",       slug: "books",       sortOrder: 3 },
+    { name: "Clothing", slug: "clothing", sortOrder: 2 },
+    { name: "Books", slug: "books", sortOrder: 3 },
   ];
 
   const insertedRoots: Record<string, typeof schema.categories.$inferSelect> = {};
@@ -101,12 +106,12 @@ async function seedCategories() {
   // ── Sub-categories ───────────────────────────
   const subCats = [
     // Electronics
-    { name: "Smartphones", slug: "smartphones",  parentId: insertedRoots["electronics"].id, sortOrder: 1 },
-    { name: "Laptops",     slug: "laptops",       parentId: insertedRoots["electronics"].id, sortOrder: 2 },
-    { name: "Tablets",     slug: "tablets",       parentId: insertedRoots["electronics"].id, sortOrder: 3 },
+    { name: "Smartphones", slug: "smartphones", parentId: insertedRoots["electronics"].id, sortOrder: 1 },
+    { name: "Laptops", slug: "laptops", parentId: insertedRoots["electronics"].id, sortOrder: 2 },
+    { name: "Tablets", slug: "tablets", parentId: insertedRoots["electronics"].id, sortOrder: 3 },
     // Clothing
-    { name: "Men",         slug: "clothing-men",  parentId: insertedRoots["clothing"].id, sortOrder: 1 },
-    { name: "Women",       slug: "clothing-women",parentId: insertedRoots["clothing"].id, sortOrder: 2 },
+    { name: "Men", slug: "clothing-men", parentId: insertedRoots["clothing"].id, sortOrder: 1 },
+    { name: "Women", slug: "clothing-women", parentId: insertedRoots["clothing"].id, sortOrder: 2 },
   ];
 
   const insertedSubs: Record<string, typeof schema.categories.$inferSelect> = {};
@@ -127,8 +132,8 @@ async function seedCategories() {
 
   // ── Leaf sub-categories ──────────────────────
   const leafCats = [
-    { name: "Pants",   slug: "pants",   parentId: insertedSubs["clothing-men"].id,   sortOrder: 1 },
-    { name: "T-Shirts",slug: "tshirts", parentId: insertedSubs["clothing-men"].id,   sortOrder: 2 },
+    { name: "Pants", slug: "pants", parentId: insertedSubs["clothing-men"].id, sortOrder: 1 },
+    { name: "T-Shirts", slug: "tshirts", parentId: insertedSubs["clothing-men"].id, sortOrder: 2 },
     { name: "Dresses", slug: "dresses", parentId: insertedSubs["clothing-women"].id, sortOrder: 1 },
   ];
 
@@ -156,29 +161,40 @@ async function seedAttributes(cats: Awaited<ReturnType<typeof seedCategories>>) 
 
   const attrDefs = [
     // ── Smartphones attrs ───────────────────────
-    { categoryId: cats.subs["smartphones"].id, name: "RAM",      slug: "ram",      inputType: "select" as const, unit: "GB",  isRequired: true,  isFilterable: true,  sortOrder: 1 },
-    { categoryId: cats.subs["smartphones"].id, name: "Storage",  slug: "storage",  inputType: "select" as const, unit: "GB",  isRequired: true,  isFilterable: true,  sortOrder: 2 },
-    { categoryId: cats.subs["smartphones"].id, name: "Processor",slug: "processor",inputType: "text"   as const, unit: "",    isRequired: false, isFilterable: false, sortOrder: 3 },
-    { categoryId: cats.subs["smartphones"].id, name: "5G",       slug: "5g",       inputType: "boolean"as const, unit: "",    isRequired: false, isFilterable: true,  sortOrder: 4 },
+    { categoryId: cats.subs["smartphones"].id, name: "RAM", slug: "ram", inputType: "select" as const, unit: "GB", isRequired: true, isFilterable: true, sortOrder: 1 },
+    { categoryId: cats.subs["smartphones"].id, name: "Storage", slug: "storage", inputType: "select" as const, unit: "GB", isRequired: true, isFilterable: true, sortOrder: 2 },
+    { categoryId: cats.subs["smartphones"].id, name: "Processor", slug: "processor", inputType: "text" as const, unit: "", isRequired: false, isFilterable: false, sortOrder: 3 },
+    { categoryId: cats.subs["smartphones"].id, name: "5G", slug: "5g", inputType: "boolean" as const, unit: "", isRequired: false, isFilterable: true, sortOrder: 4 },
     // ── Clothing (root) attrs ────────────────────
-    { categoryId: cats.roots["clothing"].id,   name: "Fabric",   slug: "fabric",   inputType: "select" as const, unit: "",    isRequired: true,  isFilterable: true,  sortOrder: 1 },
+    { categoryId: cats.roots["clothing"].id, name: "Fabric", slug: "fabric", inputType: "select" as const, unit: "", isRequired: true, isFilterable: true, sortOrder: 1 },
     // ── Pants attrs (inherits Clothing) ──────────
-    { categoryId: cats.leafs["pants"].id,      name: "Waist",    slug: "waist",    inputType: "number" as const, unit: "cm",  isRequired: true,  isFilterable: true,  sortOrder: 1 },
-    { categoryId: cats.leafs["pants"].id,      name: "Cut Style",slug: "cut",      inputType: "select" as const, unit: "",    isRequired: false, isFilterable: true,  sortOrder: 2 },
+    { categoryId: cats.leafs["pants"].id, name: "Waist", slug: "waist", inputType: "number" as const, unit: "cm", isRequired: true, isFilterable: true, sortOrder: 1 },
+    { categoryId: cats.leafs["pants"].id, name: "Cut Style", slug: "cut", inputType: "select" as const, unit: "", isRequired: false, isFilterable: true, sortOrder: 2 },
     // ── Laptops attrs ────────────────────────────
-    { categoryId: cats.subs["laptops"].id,     name: "RAM",      slug: "ram",      inputType: "select" as const, unit: "GB",  isRequired: true,  isFilterable: true,  sortOrder: 1 },
-    { categoryId: cats.subs["laptops"].id,     name: "Storage",  slug: "storage",  inputType: "select" as const, unit: "GB",  isRequired: true,  isFilterable: true,  sortOrder: 2 },
-    { categoryId: cats.subs["laptops"].id,     name: "Screen",   slug: "screen",   inputType: "number" as const, unit: "inch",isRequired: false, isFilterable: true,  sortOrder: 3 },
+    { categoryId: cats.subs["laptops"].id, name: "RAM", slug: "ram", inputType: "select" as const, unit: "GB", isRequired: true, isFilterable: true, sortOrder: 1 },
+    { categoryId: cats.subs["laptops"].id, name: "Storage", slug: "storage", inputType: "select" as const, unit: "GB", isRequired: true, isFilterable: true, sortOrder: 2 },
+    { categoryId: cats.subs["laptops"].id, name: "Screen", slug: "screen", inputType: "number" as const, unit: "inch", isRequired: false, isFilterable: true, sortOrder: 3 },
   ];
 
   const insertedAttrs: Record<string, typeof schema.categoryAttributes.$inferSelect> = {};
 
   for (const a of attrDefs) {
-    const key    = `${a.categoryId}-${a.slug}`;
-    const exists = await db.query.categoryAttributes.findFirst({
-      where: (attrs, { eq, and }) =>
-        and(eq(attrs.categoryId, a.categoryId), eq(attrs.slug, a.slug)),
-    });
+    const key = `${a.categoryId}-${a.slug}`;
+
+    // Explicit select with composite key (categoryId + slug) to avoid false hits
+    // when two different categories share the same slug (e.g. both "smartphones"
+    // and "laptops" have a "ram" attribute — different rows, same slug)
+    const [exists] = await db
+      .select()
+      .from(schema.categoryAttributes)
+      .where(
+        and(
+          eq(schema.categoryAttributes.categoryId, a.categoryId),
+          eq(schema.categoryAttributes.slug, a.slug),
+        )
+      )
+      .limit(1);
+
     if (exists) {
       log.skip(`[cat:${a.categoryId}] ${a.slug}`);
       insertedAttrs[key] = exists;
@@ -193,23 +209,23 @@ async function seedAttributes(cats: Awaited<ReturnType<typeof seedCategories>>) 
   log.section("Attribute Options");
 
   const smartphonesCatId = cats.subs["smartphones"].id;
-  const laptopsCatId     = cats.subs["laptops"].id;
-  const clothingCatId    = cats.roots["clothing"].id;
-  const pantsCatId       = cats.leafs["pants"].id;
+  const laptopsCatId = cats.subs["laptops"].id;
+  const clothingCatId = cats.roots["clothing"].id;
+  const pantsCatId = cats.leafs["pants"].id;
 
   const optionDefs = [
     // RAM (smartphones)
-    { attrKey: `${smartphonesCatId}-ram`, options: [{ label: "4 GB",  value: "4"  }, { label: "6 GB",  value: "6"  }, { label: "8 GB",  value: "8"  }, { label: "12 GB", value: "12" }] },
+    { attrKey: `${smartphonesCatId}-ram`, options: [{ label: "4 GB", value: "4" }, { label: "6 GB", value: "6" }, { label: "8 GB", value: "8" }, { label: "12 GB", value: "12" }] },
     // Storage (smartphones)
-    { attrKey: `${smartphonesCatId}-storage`, options: [{ label: "64 GB",  value: "64"  }, { label: "128 GB", value: "128" }, { label: "256 GB", value: "256" }, { label: "512 GB", value: "512" }] },
+    { attrKey: `${smartphonesCatId}-storage`, options: [{ label: "64 GB", value: "64" }, { label: "128 GB", value: "128" }, { label: "256 GB", value: "256" }, { label: "512 GB", value: "512" }] },
     // RAM (laptops)
-    { attrKey: `${laptopsCatId}-ram`, options: [{ label: "8 GB",  value: "8"  }, { label: "16 GB", value: "16" }, { label: "32 GB", value: "32" }] },
+    { attrKey: `${laptopsCatId}-ram`, options: [{ label: "8 GB", value: "8" }, { label: "16 GB", value: "16" }, { label: "32 GB", value: "32" }] },
     // Storage (laptops)
-    { attrKey: `${laptopsCatId}-storage`, options: [{ label: "256 GB", value: "256" }, { label: "512 GB", value: "512" }, { label: "1 TB",   value: "1000" }] },
+    { attrKey: `${laptopsCatId}-storage`, options: [{ label: "256 GB", value: "256" }, { label: "512 GB", value: "512" }, { label: "1 TB", value: "1000" }] },
     // Fabric (clothing)
-    { attrKey: `${clothingCatId}-fabric`, options: [{ label: "Cotton",     value: "cotton"     }, { label: "Polyester", value: "polyester" }, { label: "Denim",     value: "denim"     }, { label: "Linen",     value: "linen"     }] },
+    { attrKey: `${clothingCatId}-fabric`, options: [{ label: "Cotton", value: "cotton" }, { label: "Polyester", value: "polyester" }, { label: "Denim", value: "denim" }, { label: "Linen", value: "linen" }] },
     // Cut style (pants)
-    { attrKey: `${pantsCatId}-cut`, options: [{ label: "Slim",    value: "slim"    }, { label: "Regular", value: "regular" }, { label: "Wide",    value: "wide"    }] },
+    { attrKey: `${pantsCatId}-cut`, options: [{ label: "Slim", value: "slim" }, { label: "Regular", value: "regular" }, { label: "Wide", value: "wide" }] },
   ];
 
   for (const def of optionDefs) {
@@ -237,37 +253,37 @@ async function seedProducts(cats: Awaited<ReturnType<typeof seedCategories>>) {
 
   const productDefs = [
     {
-      product:  { categoryId: cats.subs["smartphones"].id, name: "iPhone 15",     slug: "iphone-15",     sku: "APL-IP15",    description: "Apple iPhone 15",     isActive: true },
+      product: { categoryId: cats.subs["smartphones"].id, name: "iPhone 15", slug: "iphone-15", sku: "APL-IP15", description: "Apple iPhone 15", isActive: true },
       variants: [
-        { name: "128GB Black",  sku: "APL-IP15-128-BLK", stockQuantity: 50, costPrice: "750.00", sellPrice: "999.00" },
-        { name: "256GB Black",  sku: "APL-IP15-256-BLK", stockQuantity: 30, costPrice: "850.00", sellPrice: "1149.00" },
-        { name: "512GB White",  sku: "APL-IP15-512-WHT", stockQuantity: 20, costPrice: "950.00", sellPrice: "1299.00" },
+        { name: "128GB Black", sku: "APL-IP15-128-BLK", stockQuantity: 50, costPrice: "750.00", sellPrice: "999.00" },
+        { name: "256GB Black", sku: "APL-IP15-256-BLK", stockQuantity: 30, costPrice: "850.00", sellPrice: "1149.00" },
+        { name: "512GB White", sku: "APL-IP15-512-WHT", stockQuantity: 20, costPrice: "950.00", sellPrice: "1299.00" },
       ],
     },
     {
-      product:  { categoryId: cats.subs["smartphones"].id, name: "Samsung S24",   slug: "samsung-s24",   sku: "SAM-S24",     description: "Samsung Galaxy S24",  isActive: true },
+      product: { categoryId: cats.subs["smartphones"].id, name: "Samsung S24", slug: "samsung-s24", sku: "SAM-S24", description: "Samsung Galaxy S24", isActive: true },
       variants: [
-        { name: "128GB Black",  sku: "SAM-S24-128-BLK",  stockQuantity: 40, costPrice: "650.00", sellPrice: "899.00" },
-        { name: "256GB Silver", sku: "SAM-S24-256-SLV",  stockQuantity: 25, costPrice: "750.00", sellPrice: "1049.00" },
+        { name: "128GB Black", sku: "SAM-S24-128-BLK", stockQuantity: 40, costPrice: "650.00", sellPrice: "899.00" },
+        { name: "256GB Silver", sku: "SAM-S24-256-SLV", stockQuantity: 25, costPrice: "750.00", sellPrice: "1049.00" },
       ],
     },
     {
-      product:  { categoryId: cats.subs["laptops"].id,     name: "MacBook Pro 14",slug: "macbook-pro-14", sku: "APL-MBP14",   description: "Apple MacBook Pro 14",isActive: true },
+      product: { categoryId: cats.subs["laptops"].id, name: "MacBook Pro 14", slug: "macbook-pro-14", sku: "APL-MBP14", description: "Apple MacBook Pro 14", isActive: true },
       variants: [
         { name: "M3 / 16GB / 512GB", sku: "APL-MBP14-M3-16-512", stockQuantity: 15, costPrice: "1600.00", sellPrice: "1999.00" },
-        { name: "M3 / 32GB / 1TB",   sku: "APL-MBP14-M3-32-1TB", stockQuantity: 10, costPrice: "1900.00", sellPrice: "2499.00" },
+        { name: "M3 / 32GB / 1TB", sku: "APL-MBP14-M3-32-1TB", stockQuantity: 10, costPrice: "1900.00", sellPrice: "2499.00" },
       ],
     },
     {
-      product:  { categoryId: cats.leafs["pants"].id,      name: "Slim Chinos",   slug: "slim-chinos",   sku: "CLT-CHN-001", description: "Classic slim chinos", isActive: true },
+      product: { categoryId: cats.leafs["pants"].id, name: "Slim Chinos", slug: "slim-chinos", sku: "CLT-CHN-001", description: "Classic slim chinos", isActive: true },
       variants: [
-        { name: "W30 Navy",    sku: "CLT-CHN-001-30-NVY", stockQuantity: 100, costPrice: "18.00", sellPrice: "49.00" },
-        { name: "W32 Navy",    sku: "CLT-CHN-001-32-NVY", stockQuantity: 80,  costPrice: "18.00", sellPrice: "49.00" },
-        { name: "W34 Beige",   sku: "CLT-CHN-001-34-BGE", stockQuantity: 60,  costPrice: "18.00", sellPrice: "49.00" },
+        { name: "W30 Navy", sku: "CLT-CHN-001-30-NVY", stockQuantity: 100, costPrice: "18.00", sellPrice: "49.00" },
+        { name: "W32 Navy", sku: "CLT-CHN-001-32-NVY", stockQuantity: 80, costPrice: "18.00", sellPrice: "49.00" },
+        { name: "W34 Beige", sku: "CLT-CHN-001-34-BGE", stockQuantity: 60, costPrice: "18.00", sellPrice: "49.00" },
       ],
     },
     {
-      product:  { categoryId: cats.subs["smartphones"].id, name: "Pixel 8 Pro",   slug: "pixel-8-pro",   sku: "GOO-PX8P",    description: "Google Pixel 8 Pro",  isActive: true },
+      product: { categoryId: cats.subs["smartphones"].id, name: "Pixel 8 Pro", slug: "pixel-8-pro", sku: "GOO-PX8P", description: "Google Pixel 8 Pro", isActive: true },
       variants: [
         { name: "128GB Obsidian", sku: "GOO-PX8P-128-OBS", stockQuantity: 0, costPrice: "700.00", sellPrice: "999.00" },
       ],
@@ -306,18 +322,18 @@ async function seedProducts(cats: Awaited<ReturnType<typeof seedCategories>>) {
           variantId: variant.id,
           costPrice,
           sellPrice,
-          isActive:  true,
+          isActive: true,
         });
 
         // Log price history
         await db.insert(schema.priceHistory).values({
-          variantId:    variant.id,
+          variantId: variant.id,
           oldCostPrice: null,
           newCostPrice: costPrice,
           oldSellPrice: null,
           newSellPrice: sellPrice,
-          reason:       "manual_update",
-          note:         "Initial seed price",
+          reason: "manual_update",
+          note: "Initial seed price",
         });
 
         log.ok(`  Variant: ${v.sku}  cost=${costPrice}  sell=${sellPrice}`);

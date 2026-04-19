@@ -69,7 +69,7 @@ export const categoryAttributes = pgTable('category_attributes', {
     })
     .notNull(),
   name: varchar('name', { length: 256 }).notNull(),
-  slug: varchar('slug', { length: 256 }).notNull().unique(),
+  slug: varchar('slug', { length: 256 }).notNull(),
   inputType: attributeInputTypeEnum('input_type').notNull().default('text'),
   unit: varchar('unit', { length: 30 }),
   isRequired: boolean('is_required').default(false),
@@ -84,7 +84,8 @@ export const categoryAttributes = pgTable('category_attributes', {
     .defaultNow()
     .$onUpdate(() => new Date())
     .notNull(),
-})
+},
+  t => [unique("uq_category_attributes_category_slug").on(t.categoryId, t.slug)])
 
 export const categoryAttributesRelations = relations(
   categoryAttributes,
