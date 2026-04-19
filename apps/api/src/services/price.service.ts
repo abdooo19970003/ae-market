@@ -7,7 +7,7 @@
 // ─────────────────────────────────────────────────────────────────
 
 import z from "zod";
-import { db, insertPriceHistorySchema, priceHistory, variantPrices } from "@repo/db"
+import { db, insertPriceHistorySchema, priceHistory, variantPrices } from "../db"
 import { and, desc, eq } from "drizzle-orm";
 
 //_______________________________

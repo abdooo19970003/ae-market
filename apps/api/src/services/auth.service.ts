@@ -1,6 +1,6 @@
-import { db, users } from "@repo/db"
+import { db, users } from "../db"
 import type { z } from "zod"
-import { registerSchema, loginSchema } from "@repo/db"
+import { registerSchema, loginSchema } from "../db"
 import { eq } from "drizzle-orm"
 import { AppError } from "../lib/response";
 import { StatusCodes } from "http-status-codes";

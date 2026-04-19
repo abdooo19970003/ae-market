@@ -11,7 +11,7 @@ import {
   variantAttributeValues,
   variantImages,
   variantPrices,
-} from '@repo/db'
+} from '../db'
 import { and, eq, inArray } from 'drizzle-orm'
 import { AppError, NotFoundError } from '../lib/response'
 import type { z } from 'zod'

@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken"
 import crypto from "crypto"
-import { db } from "@repo/db";
+import { db } from "../db";
 import { eq, and, lt } from "drizzle-orm";
-import { refreshTokens } from "@repo/db";
+import { refreshTokens } from "../db";
 import bcrypt from "bcryptjs";
 
 const ACCESS_SECRET = process.env.ACCESS_SECRET!;

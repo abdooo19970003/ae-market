@@ -1,4 +1,4 @@
-import { loginSchema, registerSchema } from "@repo/db";
+import { loginSchema, registerSchema } from "../db";
 import { Request, Response, NextFunction } from "express";
 import * as authSvc from "../services/auth.service"
 import { sendSuccess } from "../lib/response";
