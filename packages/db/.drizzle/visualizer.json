@@ -1,0 +1,14 @@
+[
+  { "id": "users", "position": { "x": 50, "y": 1060 } },
+  { "id": "price_history", "position": { "x": 490, "y": 820 } },
+  { "id": "product_attribute_values", "position": { "x": 1810, "y": 2010 } },
+  { "id": "product_images", "position": { "x": 1810, "y": 1370 } },
+  { "id": "product_variants", "position": { "x": 930, "y": 800 } },
+  { "id": "products", "position": { "x": 1370, "y": 1460 } },
+  { "id": "variant_attribute_values", "position": { "x": 3130, "y": 50 } },
+  { "id": "variant_images", "position": { "x": 1370, "y": 380 } },
+  { "id": "variant_prices", "position": { "x": 1370, "y": 860 } },
+  { "id": "attribute_options", "position": { "x": 2690, "y": 2480 } },
+  { "id": "categories", "position": { "x": 2690, "y": 1440 } },
+  { "id": "category_attributes", "position": { "x": 2250, "y": 1890 } }
+]

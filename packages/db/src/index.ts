@@ -11,6 +11,3 @@ export const db = drizzle(client, { schema });
 
 // export schema tables
 export * from "./schema"
-
-// export helper services
-export * as services from "./services"
