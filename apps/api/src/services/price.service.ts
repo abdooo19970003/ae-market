@@ -116,7 +116,7 @@ export async function updatePrice(rawInput: UpdatePriceInput) {
 //_______________________________
 // Set initial price (first tim --> no old values)
 //_______________________________
-export async function setInitialPrice(variantId: number, costPrice: number, sellPrice: number, changedBy: number) {
+export async function setInitialPrice(variantId: number, costPrice: string, sellPrice: string, changedBy: number) {
   // Guard: don't set initial price if one already exists
   const existing = await getActivePrice(variantId)
 
@@ -151,3 +151,4 @@ export async function setInitialPrice(variantId: number, costPrice: number, sell
     return newPrice
   })
 }
+

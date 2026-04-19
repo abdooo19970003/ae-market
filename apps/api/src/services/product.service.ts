@@ -14,9 +14,10 @@ import {
 } from '../db'
 import { and, eq, inArray } from 'drizzle-orm'
 import { AppError, NotFoundError } from '../lib/response'
-import type { z } from 'zod'
 import { StatusCodes } from 'http-status-codes'
 import { resolveVariantImages } from './images.service'
+import { z } from 'zod'
+
 
 export type CreateProductInput = z.infer<typeof insertProductSchema>
 export type CreateVariantInput = z.infer<typeof insertVariantSchema>
@@ -283,14 +284,19 @@ export async function deleteVariant(id: number) {
 //________________________________________
 // VARIANT IMAGES
 //________________________________________
+export const insertVariantImageSchema = z.object({
+  url: z.string().url(),
+  altText: z.string().max(100).optional(),
+  isPrimary: z.boolean().optional().default(false),
+  sortOrder: z.number().int().positive().optional().default(0),
+})
+export type VariantImageInput = z.infer<typeof insertVariantImageSchema>
+
+
+
 export async function addVariantImage(
   variantId: number,
-  input: {
-    url: string
-    altText?: string
-    isPrimary?: boolean
-    sortOrder?: number
-  },
+  input: VariantImageInput
 ) {
   await getVariantById(variantId) // check if variant exist
 
