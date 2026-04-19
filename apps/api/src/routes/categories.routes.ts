@@ -1,9 +1,8 @@
 import { Router } from "express"
 import { getAllCategories } from "../controllers/categories.controller.js"
 
-const router = Router()
+const categoriesRouter = Router()
 
-router.get("/", getAllCategories)
+categoriesRouter.get("/", getAllCategories)
 
-
-export default router
+export default categoriesRouter
