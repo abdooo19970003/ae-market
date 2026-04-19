@@ -2,11 +2,10 @@ import express, { type Express } from "express"
 import cors from "cors"
 import helmet from "helmet"
 import morgan from "morgan"
-import { StatusCodes } from "http-status-codes"
-import { errorHandler } from "./middlewares/errorhandler.middleware"
 import categoriesRouter from "./routes/categories.routes"
 import productRouter from "./routes/product.routes"
 import authRouter from "./routes/auth.routes"
+import swaggerDocs from "./lib/swagger"
 
 export const V1 = "/api/v1"
 
@@ -38,14 +37,6 @@ export const createServer = (): Express => {
         time: new Date().toISOString(),
       }))
 
-  // __ 404 Handler _____________________________________________________
-  app.use((req, res) => {
-    res.status(StatusCodes.NOT_FOUND)
-      .json({ success: false, error: { message: "Route not found" } })
-  })
-
-  // __ Central Error Handler _____________________________________________
-  app.use(errorHandler)
   return app
 
 }
