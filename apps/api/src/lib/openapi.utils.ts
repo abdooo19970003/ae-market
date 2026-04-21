@@ -64,3 +64,19 @@ registry.registerPath({
   },
 }
 )
+
+// /utils/delete-image/{fileId}
+registry.registerPath({
+  method: "delete",
+  path: "/utils/delete-image/{fileId}",
+  tags: ["Utils"],
+  summary: "Delete an image",
+  security: [{ bearerAuth: [] }],
+  request: {
+    params: z.object({ fileId: z.string() }),
+  },
+  responses: {
+    200: { description: "Image deleted" },
+    400: { description: "Invalid File ID" },
+  },
+});

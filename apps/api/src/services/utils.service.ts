@@ -25,3 +25,18 @@ export const uploadToImageKit = async (fileBuffer: Buffer, fileName: string, fol
     throw new AppError("Error uploading to ImageKit", StatusCodes.INTERNAL_SERVER_ERROR);
   }
 };
+
+/**
+ * Deletes a file from ImageKit
+ * @param {string} fileId - The ImageKit fileId
+ */
+export const deleteFromImageKit = async (fileId: string) => {
+  try {
+    await imagekit.deleteFile(fileId);
+    return { success: true };
+  } catch (error) {
+    console.error("Error deleting from ImageKit:", error);
+    // We use a 400 or 404 here depending on if the ID was malformed or just not found
+    throw new AppError("Failed to delete image from provider", StatusCodes.BAD_REQUEST);
+  }
+};
