@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { registry, IdParam, VariantParams, successResponse, errorSchema } from "./openapi.registry"
+import { registry, VariantParams, successResponse, errorSchema } from "./openapi.registry"
 
 // ═══════════════════════════════════════════════════════════════
 // SCHEMAS

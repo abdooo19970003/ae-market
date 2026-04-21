@@ -6,6 +6,7 @@ import categoriesRouter from "./routes/categories.routes"
 import productRouter from "./routes/product.routes"
 import authRouter from "./routes/auth.routes"
 import swaggerDocs from "./lib/swagger"
+import utilsRouter from "./routes/utils.routes"
 
 export const V1 = "/api/v1"
 
@@ -23,6 +24,8 @@ export const createServer = (): Express => {
   app.use(`${V1}/categories`, categoriesRouter)
   app.use(`${V1}/products`, productRouter)
   app.use(`${V1}/auth`, authRouter)
+  app.use(`${V1}/utils`, utilsRouter)
+
 
   // ___ Test Route __________________________________________________
   app.get("/message/:name", (req, res) =>

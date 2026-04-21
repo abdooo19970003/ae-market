@@ -3,7 +3,7 @@ import * as productSvc from "../services/product.service"
 import * as priceSvc from "../services/price.service"
 import { sendSuccess } from "../lib/response";
 import { insertProductSchema as createProductBody, insertVariantSchema as createVariantBody } from "../schema";
-import { z } from "zod";
+import { z, ZodError } from "zod";
 import { StatusCodes } from "http-status-codes";
 
 // ═══════════════════════════════════════════════════════════════

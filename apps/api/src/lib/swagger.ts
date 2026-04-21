@@ -5,6 +5,7 @@ import swaggerUi from "swagger-ui-express"
 import "./openapi.auth"
 import "./openapi.categories"
 import "./openapi.products"
+import "./openapi.utils"
 
 import { generatOpenApiDocumention } from "./openapi.registry"
 

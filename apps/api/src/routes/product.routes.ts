@@ -2,6 +2,7 @@ import { Router } from "express";
 import * as prodCtrl from "../controllers/product.controller";
 import { protect as prodProtect } from "../middlewares/auth.middleware";
 import { requireRole as prodRequiredRole } from "../middlewares/auth.middleware";
+import multer from "multer";
 
 
 const productRouter = Router()
