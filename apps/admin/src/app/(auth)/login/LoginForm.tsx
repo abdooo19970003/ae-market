@@ -15,10 +15,18 @@ import {
   FieldLabel,
 } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
+import { useAuth } from '@/lib/auth/auth.provider'
 import { cn } from '@/lib/utils'
 import { useForm } from '@tanstack/react-form'
-import { defaultValues, loginSchema } from './login.utils'
-import { login } from './login.action'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
+import z from 'zod'
+// import { login } from './login.action'
+
+const loginSchema = z.object({
+  email: z.email(),
+  password: z.string().min(1),
+})
 
 const LoginForm = ({
   className,
@@ -26,9 +34,21 @@ const LoginForm = ({
 }: Readonly<{
   className?: string
 }>) => {
+  const router = useRouter()
+  const { login } = useAuth()
+  const defaultValues = {
+    email: '',
+    password: '',
+  }
   const form = useForm({
     defaultValues,
-    onSubmit: async (data) => login(data.value),
+    onSubmit: async (data) => {
+      await login(data.value.email, data.value.password)
+      toast.success('Login successful ', {
+        description: data.value.email.split('@')[0],
+      })
+      router.push('/dashboard')
+    },
     validators: {
       onSubmit: loginSchema,
     },
