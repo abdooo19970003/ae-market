@@ -29,14 +29,14 @@ const loginSchema = z.object({
   password: z.string().min(1),
 })
 
-const LoginForm = ({
+const RegisterForm = ({
   className,
   ...props
 }: Readonly<{
   className?: string
 }>) => {
   const router = useRouter()
-  const { login } = useAuth()
+  const { register } = useAuth()
   const defaultValues = {
     email: '',
     password: '',
@@ -44,9 +44,9 @@ const LoginForm = ({
   const form = useForm({
     defaultValues,
     onSubmit: async (data) => {
-      await login(data.value.email, data.value.password)
-      toast.success('Login successful ', {
-        description: `Welcome back ${data.value.email.split('@')[0]}`,
+      await register(data.value.email, data.value.password)
+      toast.success('Sign-up successful ', {
+        description: `Welcome ${data.value.email.split('@')[0]}`,
       })
       router.push('/dashboard')
     },
@@ -62,9 +62,13 @@ const LoginForm = ({
     >
       <Card>
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
+          <CardTitle>Register a new account</CardTitle>
           <CardDescription>
             Enter your email below to login to your account
+          </CardDescription>
+          <CardDescription>
+            {' '}
+            Don't forget to complete your info in profile page.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -118,11 +122,10 @@ const LoginForm = ({
             </FieldGroup>
             <FieldGroup>
               <Field className='mt-6'>
-                <Button type='submit'>Login</Button>
+                <Button type='submit'>Sign Up</Button>
 
                 <FieldDescription className='mt-6 float-end text-xs'>
-                  Don&apos;t have an account?{' '}
-                  <Link href='/register'>Sign up</Link>
+                  you have an account? <Link href='/login'>Sign in</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>
@@ -133,4 +136,4 @@ const LoginForm = ({
   )
 }
 
-export default LoginForm
+export default RegisterForm

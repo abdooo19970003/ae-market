@@ -15,6 +15,7 @@ import {
   registerAction,
 } from './auth.action'
 import { email } from 'zod'
+import { toast } from 'sonner'
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
@@ -52,7 +53,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     try {
       const res = await registerAction(email, password)
       if (res.success) setUser(res.user)
-      else throw new Error(res.error)
+      else toast.error(res.error)
     } finally {
       setIsLoading(false)
     }

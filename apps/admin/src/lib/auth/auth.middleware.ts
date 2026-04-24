@@ -13,7 +13,6 @@ const PUBLIC_ROUTES = ["/login", "/register", "/"];
 const ADMIN_ROUTES = ["/admin", "/dashboard", "/settings"]
 
 export function authMiddleware(req: NextRequest) {
-  console.log("Auth Middleware Called");
 
   const pathName = req.nextUrl.pathname;
 
