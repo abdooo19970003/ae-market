@@ -11,6 +11,7 @@ import {
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
 } from '@/components/ui/field'
@@ -20,9 +21,7 @@ import { cn } from '@/lib/utils'
 import { useForm } from '@tanstack/react-form'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
 import z from 'zod'
-// import { login } from './login.action'
 
 const loginSchema = z.object({
   email: z.email(),
@@ -45,9 +44,7 @@ const LoginForm = ({
     defaultValues,
     onSubmit: async (data) => {
       await login(data.value.email, data.value.password)
-      toast.success('Login successful ', {
-        description: `Welcome back ${data.value.email.split('@')[0]}`,
-      })
+
       router.push('/dashboard')
     },
     validators: {
@@ -80,6 +77,8 @@ const LoginForm = ({
               <form.Field
                 name='email'
                 children={(field) => {
+                  const isInvalid =
+                    field.state.meta.isTouched && !field.state.meta.isValid
                   return (
                     <Field>
                       <FieldLabel htmlFor={field.name}>Email</FieldLabel>
@@ -91,7 +90,9 @@ const LoginForm = ({
                         value={field.state.value}
                         onChange={(e) => field.handleChange(e.target.value)}
                         onBlur={field.handleBlur}
+                        aria-invalid={isInvalid}
                       />
+                      <FieldError errors={field.state.meta.errors} />
                     </Field>
                   )
                 }}

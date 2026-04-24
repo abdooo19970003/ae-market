@@ -20,13 +20,11 @@ import { cn } from '@/lib/utils'
 import { useForm } from '@tanstack/react-form'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { toast } from 'sonner'
 import z from 'zod'
-// import { login } from './login.action'
 
-const loginSchema = z.object({
+const registerSchema = z.object({
   email: z.email(),
-  password: z.string().min(1),
+  password: z.string().min(6),
 })
 
 const RegisterForm = ({
@@ -45,13 +43,11 @@ const RegisterForm = ({
     defaultValues,
     onSubmit: async (data) => {
       await register(data.value.email, data.value.password)
-      toast.success('Sign-up successful ', {
-        description: `Welcome ${data.value.email.split('@')[0]}`,
-      })
+
       router.push('/dashboard')
     },
     validators: {
-      onSubmit: loginSchema,
+      onSubmit: registerSchema,
     },
   })
 

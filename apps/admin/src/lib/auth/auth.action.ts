@@ -93,7 +93,6 @@ export const registerAction = async (email: string, password: string): Promise<{
 }
 
 export const loginAction = async (email: string, password: string): Promise<{ success: boolean; user: AuthUser | null; error?: string }> => {
-  console.log({ email, password, message: "login action called" });
 
   try {
     const res = await fetch(`${AUTH_ENDPOINTS.LOGIN}`, {

@@ -11,6 +11,7 @@ import { AuthContextType, AuthUser } from './auth.types'
 import {
   getCurrentUserAction,
   loginAction,
+  logoutAction,
   refreshTokenAction,
   registerAction,
 } from './auth.action'
@@ -41,8 +42,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(true)
     try {
       const res = await loginAction(email, password)
-      if (res.success) setUser(res.user)
-      else throw new Error(res.error)
+      if (res.success) {
+        setUser(res.user)
+        toast.success('Login successful ', {
+          description: `Welcome back ${res.user?.email.split('@')[0]}`,
+        })
+      } else {
+        toast.error(res.error)
+      }
     } finally {
       setIsLoading(false)
     }
@@ -52,8 +59,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoading(true)
     try {
       const res = await registerAction(email, password)
-      if (res.success) setUser(res.user)
-      else toast.error(res.error)
+      if (res.success) {
+        setUser(res.user)
+        toast.success('Sign-up successful ', {
+          description: `Welcome ${res.user?.email.split('@')[0]}`,
+        })
+      } else toast.error(res.error)
     } finally {
       setIsLoading(false)
     }
@@ -62,7 +73,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const logout = useCallback(async () => {
     setIsLoading(true)
     try {
-    } catch (err) {}
+      await logoutAction()
+      setUser(null)
+      toast.info('Logout successful')
+    } catch (err) {
+    } finally {
+      setIsLoading(false)
+    }
   }, [])
 
   const refreshAuth = useCallback(async () => {
