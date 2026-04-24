@@ -5,6 +5,7 @@ import { ThemeProvider } from '@/contexts/ThemeProvider'
 import { ThemeToggle } from '@/components/ThemeToggler'
 import { AuthProvider } from '@/lib/auth/auth.provider'
 import { Toaster } from 'sonner'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -40,9 +41,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            {children}
+            <TooltipProvider>{children}</TooltipProvider>
             <Toaster
-              position='top-right'
+              position='bottom-right'
+              duration={1000}
               richColors
             />
           </ThemeProvider>

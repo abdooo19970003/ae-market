@@ -13,6 +13,8 @@ import {
   InputGroupInput,
 } from '@/components/ui/input-group'
 import { Kbd } from '@/components/ui/kbd'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
 
 export function EmptyInputGroup() {
   return (
@@ -26,17 +28,16 @@ export function EmptyInputGroup() {
           </EmptyDescription>
         </EmptyHeader>
         <EmptyContent>
-          <InputGroup className='sm:w-3/4'>
-            <InputGroupInput placeholder='Try searching for pages...' />
-            <InputGroupAddon>
-              <SearchIcon />
-            </InputGroupAddon>
-            <InputGroupAddon align='inline-end'>
-              <Kbd>/</Kbd>
-            </InputGroupAddon>
-          </InputGroup>
           <EmptyDescription>
-            Need help? <a href='#'>Contact support</a>
+            Need help? <Link href='/support'>Contact support</Link>
+          </EmptyDescription>
+          <EmptyDescription className='my-3 flex gap-5'>
+            <Button>
+              <Link href={'/'}>Back Home</Link>
+            </Button>
+            <Button variant='secondary'>
+              <Link href='/login'>Login</Link>
+            </Button>
           </EmptyDescription>
         </EmptyContent>
       </Empty>
