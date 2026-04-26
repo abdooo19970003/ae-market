@@ -40,9 +40,12 @@ const CategoryBody = z.object({
 // ───────────────────────────────────────────── 
 export async function listCategories(req: Request, res: Response, next: NextFunction) {
   try {
+    const { limit, offset } = req.pagination!;
+    const { column, order } = req.sorting!;
+    const search = req.search;
     const data = req.query.tree === "true"
-      ? await catSvc.getCategoryTree()
-      : await catSvc.getAllCategories()
+      ? await catSvc.getCategoryTree({ search })
+      : await catSvc.getAllCategories({ column, order, limit, offset, search })
 
     sendSuccess(res, data)
   } catch (error) {

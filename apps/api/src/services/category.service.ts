@@ -1,9 +1,7 @@
-import { z } from "zod"
 import { attributeOptions, categories, categoryAttributes, products } from "../schema"
 import { db } from "../db"
-import { and, desc, eq, inArray } from "drizzle-orm"
+import { aliasedTable, and, count, desc, eq, getTableColumns, ilike, inArray, or, sql } from "drizzle-orm"
 import { AppError, NotFoundError } from "../lib/response"
-import { sl } from "zod/v4/locales"
 import { StatusCodes } from "http-status-codes"
 // _____________________
 // Types
@@ -47,16 +45,59 @@ function collectDescendantIds(rows: CategoryRow[], rootId: number): number[] {
 // ____________________
 // Read
 // ____________________
-export async function getAllCategories() {
-  const rows = await db.select().from(categories).orderBy(categories.sortOrder)
-  return rows
+export async function getAllCategories({ limit, offset, column, order, search }: {
+  limit: number;
+  offset: number;
+  column: string;
+  order: "asc" | "desc";
+  search?: string;
+}) {
+  const parent = aliasedTable(categories, "parent")
+
+  // search
+  const filters = search ?
+    or(
+      ilike(categories.name, `%${search}%`),
+      ilike(categories.slug, `%${search}%`),
+      ilike(categories.description, `%${search}%`)
+    ) : undefined
+
+  // excute queries 
+  const [rows, totalCountResuld] = await Promise.all([
+    db
+      .select({
+        ...getTableColumns(categories),
+        parentName: parent.name,
+      })
+      .from(categories)
+      .leftJoin(parent, eq(categories.parentId, parent.id))
+      .where(and(filters))
+      .limit(limit)
+      .offset(offset)
+      .orderBy(order === "asc" ? sql`${sql.raw(column)} asc` : sql`${sql.raw(column)} desc`),
+    db
+      .select({ value: count() })
+      .from(categories)
+      .where(and(filters))
+  ])
+  // const rows = await db.select().from(categories).orderBy(categories.sortOrder)
+  return [rows, totalCountResuld]
 }
 
-export async function getCategoryTree() {
+export async function getCategoryTree({ search }: {
+
+  search?: string;
+}) {
+  const filters = search ?
+    or(
+      ilike(categories.name, `%${search}%`),
+      ilike(categories.slug, `%${search}%`),
+      ilike(categories.description, `%${search}%`)
+    ) : undefined
   const rows = await db
     .select()
     .from(categories)
-    .where(eq(categories.isActive, true))
+    .where(and(filters, eq(categories.isActive, true)))
     .orderBy(categories.sortOrder)
 
   return buildTree(rows)
@@ -92,10 +133,16 @@ export async function getChildCategories(parentId: number) {
   await getCategoryById(parentId) // check if parent exist
 
   const rows = await db
-    .select()
+    .select({
+      id: categories.id,
+      name: categories.name,
+      slug: categories.slug,
+      description: categories.description,
+      mageUrl: categories.imageUrl,
+      isActive: categories.isActive,
+    })
     .from(categories)
     .where(and(
-      eq(categories.isActive, true),
       eq(categories.parentId, parentId)
     ))
     .orderBy(categories.sortOrder)

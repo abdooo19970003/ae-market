@@ -24,7 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu'
-import { Blocks, LayoutDashboard, PlusSquare } from 'lucide-react'
+import { LayoutDashboard } from 'lucide-react'
 import { FaCubes, FaSignOutAlt, FaUserFriends } from 'react-icons/fa'
 import { FaGear, FaImagePortrait } from 'react-icons/fa6'
 import { ImPriceTags } from 'react-icons/im'

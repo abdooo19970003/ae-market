@@ -1,6 +1,7 @@
 import { Router } from "express"
 import * as catCtrl from "../controllers/categories.controller";
 import { protect as catProtect, requireRole } from "../middlewares/auth.middleware";
+import { parseQueryParams } from "../middlewares/queryHandler.middleware";
 
 const categoriesRouter = Router()
 
@@ -14,7 +15,7 @@ const categoriesRouter = Router()
  *       200:
  *         description: List of categories
  */
-categoriesRouter.get("/", catCtrl.listCategories);
+categoriesRouter.get("/", parseQueryParams, catCtrl.listCategories);
 
 /**
  * @openapi

@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "ae-market Docs": {
+      "type": "sse",
+      "url": "https://gitmcp.io/abdooo19970003/ae-market"
+    }
+  }
+}
