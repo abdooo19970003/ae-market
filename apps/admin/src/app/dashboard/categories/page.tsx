@@ -2,7 +2,7 @@
 
 import { keepPreviousData, useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'next/navigation'
-import { getAllCategories } from './categoris.data'
+import { getAllCategories } from '../../../lib/actions/categories'
 import { Spinner } from '@/components/ui/spinner'
 import { DataTable } from '@/components/data-table'
 import { categoryTableColumns } from './columns'

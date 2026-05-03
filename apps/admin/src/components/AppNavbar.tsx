@@ -11,8 +11,8 @@ const AppNavbar = () => {
   const { user, logout } = useAuth()
 
   return (
-    <div className='flex justify-between gap-3 w-full'>
-      <SidebarTrigger />
+    <div className='flex items-center justify-between gap-3 w-full bg-sidebar py-2 text-sidebar-foreground'>
+      <SidebarTrigger size={'lg'} />
       <div className=' flex gap-2 items-center'>
         <SearchBox className='flex-1 max-w-lg' />
         <ThemeToggle />

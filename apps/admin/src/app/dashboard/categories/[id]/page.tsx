@@ -1,4 +1,4 @@
-import CategoryDetails from './CategoryDetails'
+import CategoryDetails from '@/components/categories/CategoryDetails'
 
 export default async function CategoryDetailsPage({
   params,

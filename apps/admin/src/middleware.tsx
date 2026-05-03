@@ -9,5 +9,10 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next|.*\\..*).*)'],
+  matcher: [
+    '/dashboard/:path*',
+    '/admin/:path*',
+    '/settings/:path*',
+    '/((?!_next|api|favicon\\.ico|.*\\..*).*)',
+  ],
 }
