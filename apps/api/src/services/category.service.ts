@@ -17,6 +17,23 @@ export type CreateCategoryInput = {
   isActive: boolean;
   sortOrder?: number;
 }
+export type CreateCategoryAttributeInput = {
+  name: string;
+  slug: string;
+  inputType: "text" | "number" | "select" | "multi_select" | "boolean";
+  unit?: string | null;
+  isRequired: boolean;
+  isFilterable: boolean;
+  sortOrder?: number;
+}
+
+export type CreateAttributeOptionInput = {
+  label: string;
+  value: string;
+  sortOrder?: number;
+}
+
+
 
 // ─────────────────────────────────────────────
 // Build nested tree from flat array (in-memory)
@@ -262,4 +279,47 @@ export async function updateCategory(id: number, input: Partial<CreateCategoryIn
 
 export function deleteCategory(id: number) {
   throw new Error("Function not implemented.")
+}
+
+export async function createCategoryAttribute(categoryId: number, input: CreateCategoryAttributeInput) {
+  await getCategoryById(categoryId) // 404 Guard
+
+  const [created] = await db
+    .insert(categoryAttributes)
+    .values({ ...input, categoryId })
+    .returning()
+  if (!created) throw new AppError("Internal Server Error", StatusCodes.INTERNAL_SERVER_ERROR)
+  return created
+}
+
+export async function deleteCategoryAttribute(id: number) {
+  await getCategoryAttributeById(id) // 404 Guard
+  const [deleted] = await db
+    .delete(categoryAttributes)
+    .where(eq(categoryAttributes.id, id))
+    .returning()
+  return deleted
+}
+
+
+export async function createAttributeOption(attributeId: number, input: CreateAttributeOptionInput) {
+  await getCategoryAttributeById(attributeId) // 404 Guard
+
+  const [created] = await db
+    .insert(attributeOptions)
+    .values({ ...input, attributeId })
+    .returning()
+  if (!created)
+    throw new AppError("Internal Server Error", StatusCodes.INTERNAL_SERVER_ERROR)
+  return created
+}
+
+export async function getCategoryAttributeById(id: number) {
+  const [row] = await db
+    .select()
+    .from(categoryAttributes)
+    .where(eq(categoryAttributes.id, id))
+    .limit(1)
+  if (!row) throw new NotFoundError("Attribute")
+  return row
 }

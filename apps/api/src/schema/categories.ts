@@ -57,7 +57,7 @@ export const attributeInputTypeEnum = pgEnum('attribute_input_type', [
   'text',
   'number',
   'select',
-  'mult,_select',
+  'multi_select',
   'boolean',
 ])
 

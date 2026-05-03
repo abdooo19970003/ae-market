@@ -93,6 +93,13 @@ categoriesRouter.get("/:id/children", catCtrl.getChildren);
  */
 categoriesRouter.get("/:id/attributes", catCtrl.getCategoryAttributes)
 
+categoriesRouter.post("/:id/attributes", catProtect, requireRole("admin"), catCtrl.createCategoryAttribute)
+
+categoriesRouter.delete("/:id/attributes/:attributeId", catProtect, requireRole("admin"), catCtrl.deleteCategoryAttribute)
+
+categoriesRouter.post("/:id/attributes/:attributeId/options", catProtect, requireRole("admin"), catCtrl.createAttributeOption)
+
+
 /**
  * @openapi
  * /api/v1/categories/{id}/products:

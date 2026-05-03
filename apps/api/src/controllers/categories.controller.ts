@@ -33,6 +33,23 @@ const CategoryBody = z.object({
   sortOrder: z.number().int().min(0).optional().default(0),
 })
 
+const attributeBody = z.object({
+  name: z.string().min(2).max(150).trim(),
+  slug: z.string().min(2).max(150).regex(/^[a-z0-9-]+$/, "slug must be lowercase letters, numbers, and hyphens only"),
+  inputType: z.enum(["text", "number", "select", "multi_select", "boolean"]),
+  unit: z.string().max(30).optional(),
+  isRequired: z.boolean().optional().default(false),
+  isFilterable: z.boolean().optional().default(true),
+  sortOrder: z.number().int().min(0).optional().default(0),
+})
+
+const attributeOptionBody = z.object({
+  label: z.string().min(2).max(150).trim(),
+  value: z.string().min(2).max(150).trim(),
+  sortOrder: z.number().int().min(0).optional().default(0),
+})
+
+
 // ─────────────────────────────────────────────
 // GET /categories
 // ?tree=true  → nested tree structure
@@ -106,6 +123,44 @@ export async function getCategoryAttributes(req: Request, res: Response, next: N
     sendSuccess(res, data);
   } catch (err) { next(err); }
 }
+
+
+// ─────────────────────────────────────────────
+// POST /categories/:id/attributes
+// Creates attribute for category
+// Admin only (enforced in router)
+// ─────────────────────────────────────────────
+export async function createCategoryAttribute(req: Request, res: Response, next: NextFunction) {
+  const body = attributeBody.parse(req.body);
+  const id = idParam("id")(req);
+  const data = await catSvc.createCategoryAttribute(id, body);
+  sendSuccess(res, data, StatusCodes.CREATED);
+}
+
+// ─────────────────────────────────────────────
+// DELETE /categories/:id/attributes/:attributeId
+// Deletes category attribut by [:attributeId]
+// ─────────────────────────────────────────────
+export async function deleteCategoryAttribute(req: Request, res: Response, next: NextFunction) {
+  const attributeId = idParam("attributeId")(req);
+  const data = await catSvc.deleteCategoryAttribute(attributeId);
+  sendSuccess(res, data);
+
+}
+
+// ─────────────────────────────────────────────
+// POST //categories/:id/attributes/:attributeId/options
+// Create Attribute options for select and multi_select input types attributes
+// Admin only (enforced in router)
+// ─────────────────────────────────────────────
+export async function createAttributeOption(req: Request, res: Response, next: NextFunction) {
+  const body = attributeOptionBody.parse(req.body);
+  const id = idParam("attributeId")(req);
+
+  const data = await catSvc.createAttributeOption(id, body);
+  sendSuccess(res, data, StatusCodes.CREATED);
+}
+
 
 // ─────────────────────────────────────────────
 // GET /categories/:id/products
